@@ -1,0 +1,22 @@
+{
+    "name": "bitsika/artemis",
+    "description": "Auth Middleware for all services",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Trojan Okoh",
+            "email": "michael@okoh.co.uk"
+        }
+    ],
+    "require": {
+        "illuminate/support": "^5.0|^6.0|^7.0|^8.0",
+        "illuminate/http": "^5.0|^6.0|^7.0|^8.0",
+        "illuminate/database": "^5.0|^6.0|^7.0|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bitsika\\Artemis\\": "src/"
+        }
+    }
+}
