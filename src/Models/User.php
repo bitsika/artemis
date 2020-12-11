@@ -70,7 +70,7 @@ class User extends Model
         return $this->hasOne('App\Models\Merchant', 'id', 'recently_used_merchant');
     }
 
-    public function belongsToMerchant(Merchant $merchant) : bool
+    public function belongsToMerchant($merchant) : bool
     {
         $merchantsAddedTo   = MerchantUserRole::where('user_id', $this->id)
                                         ->where('merchant_id', $merchant->id);
