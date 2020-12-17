@@ -73,7 +73,8 @@ class User extends Model
     public function belongsToMerchant($merchant) : bool
     {
         $merchantsAddedTo   = MerchantUserRole::where('user_id', $this->id)
-                                        ->where('merchant_id', $merchant->id);
+                                        ->where('merchant_id', $merchant->id)
+                                        ->where('status', 'ACCEPTED');
 
         $merchantsOwned     = Merchant::where('id', $merchant->id)
                                     ->where('belongs_to', $this->id);
