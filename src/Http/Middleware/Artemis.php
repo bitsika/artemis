@@ -22,7 +22,7 @@ class Artemis
     {
         $response = Http::withHeaders([
             'Accept' => 'application/json'
-        ])->withToken($request->bearerToken())->get(env('AUTH_SERVER') . '/api/verify');
+        ])->withToken($request->bearerToken())->get(env('AUTH_SERVER') . '/api/v1/customer/validate');
 
         if ($response->status() === JsonResponse::HTTP_UNAUTHORIZED) {
             return Response::json([
