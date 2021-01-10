@@ -2,7 +2,6 @@
 
 namespace Bitsika\Artemis\Models;
 
-use Bitsika\Artemis\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -88,13 +87,4 @@ class User extends Model
                 ->orWhere('email', '=', $value);
     }
 
-    /**
-     * The "booted" method of the model.
-     *
-     * @return void
-     */
-    protected static function booted()
-    {
-        static::addGlobalScope(new UserScope);
-    }
 }
