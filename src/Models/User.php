@@ -5,12 +5,15 @@ namespace Bitsika\Artemis\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @method find($id)
  */
 class User extends Model
 {
+
+    protected $hidden = ['pivot'];
 
     protected $fillable = ['recently_used_merchant'];
 
@@ -35,7 +38,7 @@ class User extends Model
     {
         return $this->hasManyThrough(
             'App\Models\Merchant',
-            'App\Models\MerchantUserRole',
+            'App\Models\MerchantInvite',
             'user_id',
             'id',
             'id',
@@ -49,12 +52,9 @@ class User extends Model
      *
      * @return HasMany
      */
-    public function merchants()
+    public function merchants(): BelongsToMany
     {
-        $merchantsOwnedByUser = $this->merchantsOwned;
-        $merchantsUserWasAddedTo = $this->merchantsAddedTo;
-
-        return $merchantsOwnedByUser->merge($merchantsUserWasAddedTo);
+        return $this->belongsToMany(Merchant::class);
     }
 
 
@@ -69,16 +69,12 @@ class User extends Model
         return $this->hasOne('App\Models\Merchant', 'id', 'recently_used_merchant');
     }
 
-    public function belongsToMerchant($merchant) : bool
+    public function belongsToMerchant($merchant): bool
     {
-        $merchantsAddedTo   = MerchantUserRole::where('user_id', $this->id)
-                                        ->where('merchant_id', $merchant->id)
-                                        ->where('status', 'ACCEPTED');
-
-        $merchantsOwned     = Merchant::where('id', $merchant->id)
-                                    ->where('belongs_to', $this->id);
-
-        return $merchantsAddedTo->exists() || $merchantsOwned->exists();
+        return $this->merchants()
+                ->whereMerchantId($merchant->id)
+                ->whereBlocked(false)
+                ->exists();
     }
 
     public function scopeWhereUser($query, string $value)

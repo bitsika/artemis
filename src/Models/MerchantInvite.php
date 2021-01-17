@@ -4,7 +4,7 @@ namespace Bitsika\Artemis\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MerchantUserRole extends Model
+class MerchantInvite extends Model
 {
     protected $fillable = ['merchant_id', 'user_id', 'role_id'];
 
