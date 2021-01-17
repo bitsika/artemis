@@ -54,7 +54,7 @@ class User extends Model
      */
     public function merchants(): BelongsToMany
     {
-        return $this->belongsToMany(Merchant::class);
+        return $this->belongsToMany(Merchant::class)->withPivot('role_id', 'section', 'blocked');
     }
 
 
