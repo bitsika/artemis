@@ -20,4 +20,26 @@ class User extends Model
     {
         return $this->hasMany('App\Models\Merchant', 'belongs_to');
     }
+
+    /**
+     * Relationship stating that a user
+     * can have many loans
+     *
+     * @return HasMany
+     */
+    public function loans()
+    {
+        return $this->hasMany('App\Models\Loan');
+    }
+
+    /**
+     * Relationship stating that a user
+     * can have many loan approvals
+     *
+     * @return HasMany
+     */
+    public function loanApprovals()
+    {
+        return $this->hasMany('App\Models\LoanApproval');
+    }
 }
