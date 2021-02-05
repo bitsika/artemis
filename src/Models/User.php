@@ -4,6 +4,7 @@ namespace Bitsika\Artemis\Models;
 
 use App\Enums\Abstracts\UserRole;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class User extends Model
 {
-
     protected $hidden = ['pivot'];
 
     protected $fillable = ['recently_used_merchant'];
@@ -31,9 +31,31 @@ class User extends Model
 
     /**
      * Relationship stating that a user
-     * has been added to many merchants
+     * can have many loans
      *
      * @return HasMany
+     */
+    public function loans()
+    {
+        return $this->hasMany('App\Models\Loan');
+    }
+
+    /**
+     * Relationship stating that a user
+     * can have many loan approvals
+     *
+     * @return HasMany
+     */
+    public function loanApprovals()
+    {
+        return $this->hasMany('App\Models\LoanApproval');
+    }
+
+    /**
+     * Relationship stating that a user
+     * has been added to many merchants
+     *
+     * @return HasManyThrough
      */
     public function merchantsAddedTo()
     {
@@ -43,7 +65,7 @@ class User extends Model
             'user_id',
             'id',
             'id',
-            'merchant_id',
+            'merchant_id'
         );
     }
 
@@ -51,15 +73,14 @@ class User extends Model
      * Relationship stating all merchants
      * a user belongs to and owns
      *
-     * @return HasMany
+     * @return BelongsToMany
      */
-    public function merchants(): BelongsToMany
+    public function merchants()
     {
         return $this->belongsToMany(Merchant::class)
                 ->withPivot('role_id', 'section')
                 ->wherePivot('role_id', "!=" , UserRole::Suspended);
     }
-
 
     /**
      * Relationship stating the User's recently
@@ -75,15 +96,14 @@ class User extends Model
     public function belongsToMerchant($merchant): bool
     {
         return $this->merchants()
-                ->whereMerchantId($merchant->id)
-                ->whereBlocked(false)
-                ->exists();
+            ->whereMerchantId($merchant->id)
+            ->whereBlocked(false)
+            ->exists();
     }
 
     public function scopeWhereUser($query, string $value)
     {
         return $query->where('username', '=', $value)
-                ->orWhere('email', '=', $value);
+            ->orWhere('email', '=', $value);
     }
-
 }
