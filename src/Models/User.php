@@ -2,12 +2,12 @@
 
 namespace Bitsika\Artemis\Models;
 
-use App\Enums\Abstracts\UserRole;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Bitsika\Artemis\Enums\MerchantUserRole;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * @method find($id)
@@ -79,7 +79,7 @@ class User extends Model
     {
         return $this->belongsToMany(Merchant::class)
                 ->withPivot('role_id', 'section')
-                ->wherePivot('role_id', "!=" , UserRole::Suspended);
+                ->wherePivot('role_id', "!=" , MerchantUserRole::Suspended);
     }
 
     /**
