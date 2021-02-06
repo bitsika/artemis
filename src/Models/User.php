@@ -97,7 +97,7 @@ class User extends Model
     {
         return $this->merchants()
             ->whereMerchantId($merchant->id)
-            ->whereBlocked(false)
+            ->where('role_id', '!=', MerchantUserRole::Suspended)
             ->exists();
     }
 
