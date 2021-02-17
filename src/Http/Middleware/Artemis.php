@@ -22,7 +22,7 @@ class Artemis
     {
         $response = Http::withHeaders([
             'Accept' => 'application/json'
-        ])->withToken($request->bearerToken())->get(env('AUTH_SERVER') . '/api/verify');
+            ])->withToken($request->bearerToken())->get(config('bitsika.server_url.transaction') . '/api/v1/artemis/verify/user');
 
         if ($response->status() === JsonResponse::HTTP_UNAUTHORIZED) {
             return Response::json([
@@ -30,7 +30,12 @@ class Artemis
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
-        $user = (new User())->find($response->object()->user_id);
+        // Use this later
+        // $user = $response->object();
+
+        // Remove this line later. 
+        // The plan is to return the object returned
+        $user = (new User())->find($response->object()->id);
 
         $request->setUserResolver(function () use ($user) {
             return $user;
