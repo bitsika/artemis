@@ -2,10 +2,12 @@
 
 namespace Bitsika\Artemis\Models;
 
+use Bitsika\Artemis\Enums\Ticketing\TicketStatus;
 use Illuminate\Database\Eloquent\Model;
 use Bitsika\Artemis\Enums\MerchantUserRole;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Bitsika\Artemis\Models\Ticketing\TicketCategory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
@@ -80,6 +82,96 @@ class User extends Model
         return $this->belongsToMany(Merchant::class)
                 ->withPivot('role_id', 'section')
                 ->wherePivot('role_id', "!=" , MerchantUserRole::Suspended);
+    }
+
+    /**
+     * Relationship stating that a user
+     * can have many events
+     *
+     * @return HasMany
+     */
+    public function events()
+    {
+        return $this->hasMany('Bitsika\Artemis\Models\Ticketing\Event', 'organizer_id');
+    }
+
+    /**
+     * Relationship stating that a user
+     * can has one balance
+     *
+     * @return HasOne
+     */
+    public function balance()
+    {
+        return $this->hasOne('App\Models\Balance', 'user_id');
+    }
+
+    /**
+     * Relationship stating that a user
+     * owns many tickets
+     *
+     * @return HasMany
+     */
+    public function Tickets()
+    {
+        return $this->hasMany('Bitsika\Artemis\Models\Ticketing\Ticket', 'owner_id');
+    }
+
+    /**
+     * Relationship stating that a user
+     * bought many tickets
+     *
+     * @return HasMany
+     */
+    public function boughtTickets()
+    {
+        return $this->hasMany('Bitsika\Artemis\Models\Ticketing\Ticket', 'buyer_id');
+    }
+
+    /**
+     * Relationship stating that a user
+     * bought many tickets in batches
+     *
+     * @return HasMany
+     */
+    public function ticketsByBatch($batch)
+    {
+        return $this->boughtTickets()->where('batch', '=', $batch);
+    }
+
+    /**
+     * Relationship stating that a user
+     * many reserved tickets
+     *
+     * @return HasMany
+     */
+    public function existingReservedTicketsByCategory($ticketCategory)
+    {
+        return $this->boughtTickets()
+                    ->whereCategory($ticketCategory)
+                    ->whereStatus(TicketStatus::Reserved);
+    }
+
+    /**
+     * Check if User's balance is sufficient to pay for expenses
+     *
+     * @param $expenses
+     * @return bool
+     */
+    public function hasSufficientFunds(float $debitAmount) : bool
+    {
+        return $this->balance->balance_amount >= $debitAmount;
+    }
+
+    /**
+     * Check if User's balance is not sufficient to pay for expenses
+     *
+     * @param $expenses
+     * @return bool
+     */
+    public function insufficientFunds(float $debitAmount) : bool
+    {
+        return ! $this->hasSufficientFunds($debitAmount);
     }
 
     /**
