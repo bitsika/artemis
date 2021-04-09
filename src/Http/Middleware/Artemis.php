@@ -31,6 +31,9 @@ class Artemis
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
+        Log::info(print_r(env('TRANSACTION_SERVER'), true));
+        Log::info(print_r($request->bearerToken(), true));
+        Log::info(print_r($response->status(), true));
         Log::info(print_r($response->object(), true));
 
         // Use this later
