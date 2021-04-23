@@ -10,7 +10,7 @@ return [
     */
 
     'auth'   => [
-        'url'   => env('ARTEMIS_AUTH_URL')
+        'url'   => env('AUTHENTICATION_SERVER')
     ],
 
 ];

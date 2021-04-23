@@ -2,7 +2,6 @@
 
 namespace Bitsika\Artemis\Http\Middleware;
 
-use Bitsika\Artemis\Models\User;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +21,7 @@ class Artemis
     {
         $response = Http::withHeaders([
             'Accept' => 'application/json'
-            ])->withToken($request->bearerToken())->get(env('TRANSACTION_SERVER') . '/artemis/verify/user');
+            ])->withToken($request->bearerToken())->get(env('AUTHENTICATION_SERVER') . '/artemis/verify/user');
 
         if ($response->status() === JsonResponse::HTTP_UNAUTHORIZED) {
             return Response::json([
@@ -31,11 +30,7 @@ class Artemis
         }
 
         // Use this later
-        // $user = $response->object();
-
-        // Remove this line later. 
-        // The plan is to return the object returned
-        $user = (new User())->find($response->object()->id);
+        $user = $response->object();
 
         $request->setUserResolver(function () use ($user) {
             return $user;
