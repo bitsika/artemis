@@ -4,9 +4,7 @@ namespace Bitsika\Artemis\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Bitsika\Artemis\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 
@@ -31,11 +29,8 @@ class Artemis
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
-        // Use this later
-        $user = $response->object();
-
-        $request->setUserResolver(function () use ($user) {
-            return $user;
+        $request->setUserResolver(function () use ($response) {
+            return $response->object();
         });
 
         return $next($request);
