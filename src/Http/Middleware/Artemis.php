@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 
 class Artemis
@@ -38,6 +39,8 @@ class Artemis
         }
 
         if ($response->status() !== JsonResponse::HTTP_OK) {
+            Log::debug("Could not get user " . print_r($response->object(), true));
+            
             return Response::json([
                 'message' => 'an error occurred',
                 'data' => $response->object()
