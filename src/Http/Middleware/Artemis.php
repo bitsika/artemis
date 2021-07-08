@@ -20,9 +20,11 @@ class Artemis
      */
     public function handle(Request $request, Closure $next)
     {
+        $url = env('AUTHENTICATION_SERVER') . '/artemis/verify/user';
+
         $response = Http::withHeaders([
             'Accept' => 'application/json'
-        ])->withToken($request->bearerToken())->get(env('AUTHENTICATION_SERVER') . '/artemis/verify/user');
+        ])->withToken($request->bearerToken())->get($url);
 
         if ($response->status() === JsonResponse::HTTP_OK) {
             $request->setUserResolver(function () use ($response) {
@@ -40,7 +42,8 @@ class Artemis
 
         if ($response->status() !== JsonResponse::HTTP_OK) {
             Log::debug("Could not get user " . print_r($response->object(), true));
-            
+            Log::debug("Url => {$url}");
+
             return Response::json([
                 'message' => 'an error occurred',
                 'data' => $response->object()
