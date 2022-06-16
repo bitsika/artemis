@@ -21,13 +21,26 @@ class Artemis
     public function handle(Request $request, Closure $next)
     {
         $url = env('AUTHENTICATION_SERVER') . '/artemis/verify/user';
+        // cache()->forget("user.bearer.token.{$request->bearerToken()}");
+
+        if(cache()->has("user.bearer.token.{$request->bearerToken()}")) {
+            $cached = cache()->get("user.bearer.token.{$request->bearerToken()}");
+            $request->setUserResolver(function () use ($cached) {
+                return $cached;
+            });
+            // dd($cached->id);
+            return $next($request);
+        }
 
         $response = Http::withHeaders([
             'Accept' => 'application/json'
         ])->withToken($request->bearerToken())->get($url);
 
         if ($response->status() === JsonResponse::HTTP_OK) {
-            $request->setUserResolver(function () use ($response) {
+            $request->setUserResolver(function () use ($response, $request) {
+                cache()->remember("user.bearer.token.{$request->bearerToken()}", now()->addMinutes(60), function() use($response) {
+                    return $response->object();
+                });
                 return $response->object();
             });
 
