@@ -36,7 +36,7 @@ class Artemis
 
         if ($response->status() === JsonResponse::HTTP_OK) {
             $request->setUserResolver(function () use ($response, $request) {
-                cache()->remember("user.bearer.token.{$request->bearerToken()}", now()->addMinutes(60), function() use($response) {
+                cache()->remember("user.bearer.token.{$request->bearerToken()}", now()->addHours(24), function() use($response) {
                     return $response->object();
                 });
                 return $response->object();
