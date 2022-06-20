@@ -21,14 +21,12 @@ class Artemis
     public function handle(Request $request, Closure $next)
     {
         $url = env('AUTHENTICATION_SERVER') . '/artemis/verify/user';
-        // cache()->forget("user.bearer.token.{$request->bearerToken()}");
 
         if(cache()->has("user.bearer.token.{$request->bearerToken()}")) {
             $cached = cache()->get("user.bearer.token.{$request->bearerToken()}");
             $request->setUserResolver(function () use ($cached) {
                 return $cached;
             });
-            // dd($cached->id);
             return $next($request);
         }
 
